@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Wikipedia Link
+# key: wiki
+# --
+<a href="https://en.wikipedia.org/wiki/${name}"><img class="icon" src = "w.svg" alt="Link to Wikipedia"/></a>

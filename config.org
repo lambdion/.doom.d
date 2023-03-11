@@ -1,0 +1,238 @@
+* Config
+Note that this org file will be tangled to ~config.el~ when ~doom sync~ is run, it will also be tangled when saving an org file in your $DOOMDIR (~/doom.d). See [[https://docs.doomemacs.org/latest/modules/config/literate/]].
+
+* Doom
+#+begin_src emacs-lisp
+;;; config.el -*- lexical-binding: t; -*-
+#+end_src
+** Theme
+#+begin_src emacs-lisp
+(setq doom-theme 'doom-ayu-dark) ; set theme
+;;(setq fancy-splash-image (expand-file-name "doom-emacs-gray.png" doom-user-dir)) ;  set splash image
+#+end_src
+
+*** Line Numbers
+Set line numbers to True, meaning absolute line numbering will always be shown.
+#+begin_src emacs-lisp
+(setq display-line-numbers-type t)
+#+end_src
+
+**** Disable During Zen
+I do not want line numbers activated while in Zen Mode (=writeroom-mode=)
+#+begin_src emacs-lisp
+(defun my-toggle-normal-line-numbers ()
+  "Turn line numbers off if in writeroom-mode, otherwise turn on."
+  (interactive)
+  (if (eq writeroom-mode 't)      ; if writeroom mode is on...
+      (setq display-line-numbers nil)   ; turn them off
+    (setq display-line-numbers 't)))    ; otherwise turn them back on again
+
+;;; add a hook to run this function when zen mode is activated or deactivated
+(add-hook 'writeroom-mode-hook 'my-toggle-normal-line-numbers)
+#+end_src
+*** Font
+See {C-h v doom-font} for documentation on how doom handles fonts.
+#+begin_src emacs-lisp
+(setq doom-font (font-spec :family "Noto Sans Mono Medium" :size 22) ; set defaut font
+      doom-variable-pitch-font (font-spec :family "Noto Sans" :size 22) ; set variable width font
+      doom-unicode-font "-GOOG-Noto Sans Mono-medium-normal-normal-*-22-*-*-*-*-0-iso10646-1") ; set unicode font
+#+end_src
+**** Fix Greek Characters
+I had an issue with Greek characters, specifically lambda, not displaying in the correct font. This should fix it.
+For some reason, to actually get this to run, I had to call the function after the fact, rather than just calling it in the config. Setting it to run after eshell (the situation in which I am most likely to experiece this issue) fixes this.
+To fix greek characters on the fly, simply call {M-x my-greek-font-fix}.
+#+begin_src emacs-lisp
+(defun my-greek-font-fix ()
+  "Set the fontset-default for Greek & Coptic"
+  (interactive)
+  (set-fontset-font "fontset-default"
+                    (cons (decode-char 'ucs #x0370)
+                          (decode-char 'ucs #x03ff))
+                    "-GOOG-Noto Sans Mono-medium-normal-normal-*-22-*-*-*-*-0-iso10646-1")) ;; λe
+(after! eshell
+  (my-greek-font-fix))
+#+end_src
+* Evil
+#+begin_src emacs-lisp
+(map! :map evil-motion-state-map
+      ;; make ]] and [[ move to org headings
+      "] ]" #'org-next-visible-heading
+      "[ [" #'org-previous-visible-heading
+      ;; make j and k use visual lines rather than actual lines, to make line wrap easier to navigate through
+      "j" #'evil-next-visual-line
+      "k" #'evil-previous-visual-line)
+#+end_src
+
+* Notes
+** Deft
+Deft takes a bit of customizing to work with Org Roam, but it does indeed work very well once sorted.
+#+begin_src emacs-lisp
+(after! deft
+  ;; Standard Deft Configuration
+  (setq deft-extensions '("txt" "md" "org")); file extensions
+  (setq deft-directory "~/Documents/Resources/org/roam/"); directory
+  (setq deft-recursive nil); dont search directories recursively
+  ;; Regexes to work with org-roam
+  (setq deft-strip-summary-regexp  ; this is a regexp that processes the "file summary", so ugly metadata doesnt get displayed in the file preview
+        (concat "\\("
+          "^:.+:.*\n"     ; any line with a :SOMETHING:
+          "\\|^#\\+.*\n"  ; any line starting with a #+
+          "\\|^\\*.+.*\n" ; any line where an asterisk starts the line
+          "\\|\n"         ; any newline characters, so the file summary stays on a single line
+          "\\)"))
+  (setq deft-strip-title-regexp    ; this is regexp that processes the title, so similar metadata is hidden, otherwise the title would always be #+title: Title
+        "\\(?:^%+\\|^#\\+TITLE: *\\|^[#* ]+\\|-\\*-[[:alpha:]]+-\\*-\\|^title:[ ]*\\|#+$\\)")
+  ;; Advice to use #+title metadata field as the title, rather than the first line as it is by default
+  ;; Courtesy of @brittAnderson https://github.com/jrblevin/deft/issues/75#issuecomment-919578769
+  (advice-add 'deft-parse-title :override
+   (lambda (file contents)
+       (if deft-use-filename-as-title  ; if the var to make the filename the title is true, do so
+           (deft-base-filename file)
+         (let* ((case-fold-search 't)  ; otherwwise, search for the line with "title:" in it
+                (begin (string-match "title: " contents))
+                (end-of-begin (match-end 0))
+                (end (string-match "\n" contents begin)))
+           (if begin
+               (substring contents end-of-begin end)
+             (format "%s" file)))))))
+#+end_src
+** Org
+The default org directory must be set before it loads, therefore it is outside the ~after!~ block
+#+begin_src emacs-lisp
+;; org directory
+(setq org-directory "~/Documents/Resources/org/")
+(after! org
+  ;; add LaTeX preview to the {SPC m} localleader map in org-mode
+  (map! :map org-mode-map
+        :localleader
+        :n "L" #'org-latex-preview)
+)
+#+end_src
+
+*** Org Roam
+I used to use a load of config to make org-roam nice, but then realized doom had native org support with ~:lang (org +roam2)~, so the only stuff left are my personal requirements.
+**** Capture Templates
+These are my personal org-roam capture templates
+#+begin_src emacs-lisp
+(setq org-roam-capture-templates
+      '(("d" "default" plain
+      "%?"
+      :if-new (file+head "${slug}.org" "${title}\n#+date: %U\n#+filetags: :\n")
+      :unnarrowed t)))
+#+end_src
+**** Filename Update
+Make it so org-roam files have their filenames updated when the metadata title is updated.
+- [[https://org-roam.discourse.group/t/does-renaming-title-no-longer-renames-the-filename/]] by timquelch
+- TODO make it so it uses hyphens rather than underscores, i have no idea how
+#+begin_src emacs-lisp
+(add-hook! 'after-save-hook                                               ; Run this function upon saving
+        (defun my-org-roam-rename-file-to-title ()                        ; Define function
+        (when-let*
+                ((old-file (buffer-file-name))
+                (is-roam-file (org-roam-file-p old-file))
+                (file-node (save-excursion
+                        (goto-char 1)
+                        (org-roam-node-at-point)))
+                (slug (org-roam-node-slug file-node))
+                (new-file (expand-file-name (concat slug ".org")))
+                (different-name? (not (string-equal old-file new-file))))
+        (org-roam-db-sync)                                                ; Sync the db
+        (rename-buffer new-file)                                          ; Rename the buffer
+        (rename-file old-file new-file)                                   ; Rename the file
+        (set-visited-file-name new-file)                                  ; Set visited file name
+        (set-buffer-modified-p t)                                         ; Set buffer modified
+        (save-buffer))))                                                  ; Save
+#+end_src
+*** Org Roam UI
+From [[https://github.com/org-roam/org-roam-ui#doom]]
+#+begin_src emacs-lisp
+(use-package! websocket
+    :after org-roam)
+(use-package! org-roam-ui
+    :after org-roam ;; or :after org
+;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+;;         a hookable mode anymore, you're advised to pick something yourself
+;;         if you don't care about startup time, use
+;;  :hook (after-init . org-roam-ui-mode)
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
+#+end_src
+**
+**  Hyperbole
+Doing {SPC h h} all the time is cumbersome. {SPC y} is unbound in doom, nice.
+#+begin_src emacs-lisp
+(map! :map doom-leader-map
+      "y" #'hyperbole)
+#+end_src
+Hyperbole and Org disagree over the {M-RET} key, so I rebind Org's one. Hyperbole has a variable to sort out this disagreement, see {C-h v hsys-org-enable-smart-keys RET} for more info.
+#+begin_src emacs-lisp
+(after! hyperbole
+  (setq hsys-org-enable-smart-keys 't)  ; prioritze hyperbole functionality completely over org
+  (map! :map org-mode-map               ; rebind org so I can still use it even when on a hyperbole button
+      "s-<return>" #'org-meta-return))
+#+end_src
+I dont like to clutter my home dir with .directories if I can help it.
+#+begin_src emacs-lisp
+(after! hyperbole
+  (setq hbmap:dir-user "/home/nathan/.emacs.doom/hyperbole"))
+#+end_src
+** Journal
+I use a monthly journal using =org-journal= (the ~+journal~ flag in =init.el=).
+#+begin_src emacs-lisp
+(after! org-journal
+  ;; Use a monthly format
+  (setq org-journal-file-type 'monthly)
+  (setq org-journal-file-format "%Y%m")                 ; filenames
+  ;; Use valid org-mode timestamps in the headings and subheadings instead of plaintext dates and times
+  (setq org-journal-date-format "[%Y-%m-%d %a]")        ; day headings
+  (setq org-journal-time-format "[%Y-%m-%d %a %H:%M]")) ; time headings
+#+end_src
+I prefer the keybindings to be the same structure as with Org Roam.
+#+begin_src emacs-lisp
+(map! :map doom-leader-notes-map
+      "j n" #'org-journal-new-entry
+      "j N" #'org-journal-new-scheduled-entry
+      "j f" #'org-journal-search-forever
+      "j j" #'org-journal-display-entry
+      "j J" #'org-journal-read-entry)
+
+#+end_src
+* Terminals
+** Vterm
+Set the default shell to fish
+#+begin_src emacs-lisp
+(setq vterm-shell "/bin/fish")
+#+end_src
+** Eshell
+There's this cool thing called Smart Shell where your cursor gets put on the command you just executed rather than at the new prompt, meaning:
+- You can read the output of the executed command from the top down
+- You can use arrow keys to change parts of the command and reexecute the improved one
+- You can start typing to begin a new command
+Janky, needs some polish for working with evil and company, but useful in some situations
+[[https://www.masteringemacs.org/article/complete-guide-mastering-eshell]]
+[[https://reddit.com/r/emacs/comments/cyu4is]]
+#+begin_src emacs-lisp
+;;(add-to-list 'load-path "~/.doom.d/lisp/")  ;; I cloned the em-smart.el to here in case
+;;(require 'em-smart)  ;; this should make it work
+;;(add-to-list 'eshell-modules-list 'eshell-smart)  ;; or perhaps this is making it work and the rest is unnecessary
+;; either way, it works and im not touching it in case it ceases to
+#+end_src
+
+
+* Other Misc Packages
+** GNU APL Mode
+Add ~gnu-apl-mode~'s keyboard to Doom's {SPC t} toggle menu.
+#+begin_src emacs-lisp
+(map! :map doom-leader-toggle-map
+      "a" #'gnu-apl-show-keyboard) ; bind SPC t a to toggle the APL keyboard buffer
+#+end_src
+** Calc
+Add Emac's ~calc~ to Doom's {SPC o} open menu.
+#+begin_src emacs-lisp
+(map! :map doom-leader-open-map
+      "c" #'calc                   ; calc is cool
+      "C" #'full-calc)             ; rpn 💪
+#+end_src
