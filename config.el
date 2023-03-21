@@ -40,7 +40,7 @@
 (after! deft
   ;; Standard Deft Configuration
   (setq deft-extensions '("txt" "md" "org")); file extensions
-  (setq deft-directory "~/Documents/Resources/org/roam/"); directory
+  (setq deft-directory "~/res/org/roam/"); directory
   (setq deft-recursive nil); dont search directories recursively
   ;; Regexes to work with org-roam
   (setq deft-strip-summary-regexp  ; this is a regexp that processes the "file summary", so ugly metadata doesnt get displayed in the file preview
@@ -67,7 +67,7 @@
              (format "%s" file)))))))
 
 ;; org directory
-(setq org-directory "~/Documents/Resources/org/")
+(setq org-directory "~/res/org/")
 (after! org
   ;; add LaTeX preview to the {SPC m} localleader map in org-mode
   (map! :map org-mode-map
@@ -122,7 +122,7 @@
       "s-<return>" #'org-meta-return))
 
 (after! hyperbole
-  (setq hbmap:dir-user "/home/nathan/.emacs.doom/hyperbole"))
+  (setq hbmap:dir-user "~/.config/emacs/hyperbole"))
 
 (after! org-journal
   ;; Use a monthly format
