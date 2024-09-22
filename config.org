@@ -62,6 +62,22 @@ To fix greek characters on the fly, simply call {M-x my-greek-font-fix}.
       "j" #'evil-next-visual-line
       "k" #'evil-previous-visual-line)
 #+end_src
+** Lisp Editing
+Put parinfer in paren mode by default. Parinfer in smart mode lets you indent like python and it handles the parens. This is too intrusive and doesn't play well with other lisp editing toolkits. Parinfer in paren mode handles the indentation while leaving you control over the parens.
+#+begin_src emacs-lisp
+(after! parinfer-rust
+  (setq! parinfer-rust-preferred-mode "paren"))
+#+end_src
+- https://github.com/doomemacs/doomemacs/issues/3743
+#+begin_src emacs-lisp
+(after! evil-cleverparens
+  (add-hook! lisp-mode 'evil-cleverparens-mode))
+#+end_src
+Add a wrapping keybind because otherwise there is none.
+#+begin_src emacs-lisp
+(map! :map lispy-mode-map
+      "M-(" #'lispy-wrap-round)
+#+end_src
 
 * Notes
 ** Deft

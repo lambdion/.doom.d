@@ -37,6 +37,15 @@
       "j" #'evil-next-visual-line
       "k" #'evil-previous-visual-line)
 
+(after! parinfer-rust
+  (setq! parinfer-rust-preferred-mode "paren"))
+
+(after! evil-cleverparens
+  (add-hook! lisp-mode 'evil-cleverparens-mode))
+
+(map! :map lispy-mode-map
+      "M-(" #'lispy-wrap-round)
+
 (after! deft
   ;; Standard Deft Configuration
   (setq deft-extensions '("txt" "md" "org")); file extensions
