@@ -111,8 +111,8 @@ The default org directory must be set before it loads, therefore it is outside t
 
 *** Org Roam
 I used to use a load of config to make org-roam nice, but then realized doom had native org support with ~:lang (org +roam2)~, so the only stuff left are my personal requirements.
-**** Capture Templates
-These are my personal org-roam capture templates
+**** COMMENT Capture Templates
+These are my personal org-roam capture templates. One day I'd like to separate capturing from notetaking, and perhaps fullscreen and customize the roam capture menu.
 #+begin_src emacs-lisp
 (setq org-roam-capture-templates
       '(("d" "default" plain
@@ -221,7 +221,6 @@ Janky, needs some polish for working with evil and company, but useful in some s
 ;; either way, it works and im not touching it in case it ceases to
 #+end_src
 
-
 * Other Misc Packages
 ** GNU APL Mode
 Add ~gnu-apl-mode~'s keyboard to Doom's {SPC t} toggle menu.
@@ -235,4 +234,15 @@ Add Emac's ~calc~ to Doom's {SPC o} open menu.
 (map! :map doom-leader-open-map
       "c" #'calc                   ; calc is cool
       "C" #'full-calc)             ; rpn 💪
+#+end_src
+
+** Which-Key?
+#+begin_src emacs-lisp
+(setq which-key-idle-delay 0.2)
+#+end_src
+
+** Hy
+~hy-shell--interpreter-args~ is a list of arguments to pass to the Hy interpreter in a REPL like that created by ~run-hy~. By default, as set in =hy-shell.el=, it is set to ~'("--spy")~. This argument, as per ~$ hy --help~, tells the interpreter to "print equivalent Python code before executing". To disable this functionality, set it to nil.
+#+begin_src emacs-lisp
+;; (setq hy-shell--interpeter-args nil)
 #+end_src

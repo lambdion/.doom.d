@@ -75,11 +75,6 @@
         :n "L" #'org-latex-preview)
 )
 
-(setq org-roam-capture-templates
-      '(("d" "default" plain
-      "%?"
-      :if-new (file+head "${slug}.org" "${title}\n#+date: %U\n#+filetags: :\n")
-      :unnarrowed t)))
 
 (add-hook! 'after-save-hook                                               ; Run this function upon saving
         (defun my-org-roam-rename-file-to-title ()                        ; Define function
@@ -152,3 +147,7 @@
 (map! :map doom-leader-open-map
       "c" #'calc                   ; calc is cool
       "C" #'full-calc)             ; rpn 💪
+
+(setq which-key-idle-delay 0.2)
+
+;; (setq hy-shell--interpeter-args nil)
