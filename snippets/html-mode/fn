@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Footnote
+# uuid:
+# key: fn
+# condition: t
+# --
+<a id="fn${1:#}ref${2:1}" href="#fn$1"><sup>[$1]</sup></a>$0
