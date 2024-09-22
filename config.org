@@ -106,9 +106,18 @@ The default org directory must be set before it loads, therefore it is outside t
   (map! :map org-mode-map
         :localleader
         :n "L" #'org-latex-preview)
-)
+  ;; Make M-RET enter evil insert mode
+  (define-key org-mode-map
+              [remap org-meta-return]
+              #'my-org-meta-return))
 #+end_src
-
+I'd rather M-RET on a bullet point put me in insert, so I use this wrapper function.
+#+begin_src emacs-lisp
+(defun my-org-meta-return ()
+  (interactive)
+  (evil-insert-state) ; Enter evil insert mode
+  (org-meta-return))  ; The ordinary function
+#+end_src
 *** Org Roam
 I used to use a load of config to make org-roam nice, but then realized doom had native org support with ~:lang (org +roam2)~, so the only stuff left are my personal requirements.
 **** COMMENT Capture Templates
@@ -170,9 +179,11 @@ Doing {SPC h h} all the time is cumbersome. {SPC y} is unbound in doom, nice.
 Hyperbole and Org disagree over the {M-RET} key, so I rebind Org's one. Hyperbole has a variable to sort out this disagreement, see {C-h v hsys-org-enable-smart-keys RET} for more info.
 #+begin_src emacs-lisp
 (after! hyperbole
-  (setq hsys-org-enable-smart-keys 't)  ; prioritze hyperbole functionality completely over org
-  (map! :map org-mode-map               ; rebind org so I can still use it even when on a hyperbole button
-      "s-<return>" #'org-meta-return))
+  ;; Prioritze hyperbole functionality only when on a button
+  (setq hsys-org-enable-smart-keys 'buttons)
+  ;; Rebind org's M-RET so I can still use it even when on a hyperbole button
+  (map! :map org-mode-map
+      "M-s-<return>" #'my-org-meta-return))
 #+end_src
 I dont like to clutter my home dir with .directories if I can help it.
 #+begin_src emacs-lisp

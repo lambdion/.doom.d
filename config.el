@@ -73,8 +73,15 @@
   (map! :map org-mode-map
         :localleader
         :n "L" #'org-latex-preview)
-)
+  ;; Make M-RET enter evil insert mode
+  (define-key org-mode-map
+              [remap org-meta-return]
+              #'my-org-meta-return))
 
+(defun my-org-meta-return ()
+  (interactive)
+  (evil-insert-state) ; Enter evil insert mode
+  (org-meta-return))  ; The ordinary function
 
 (add-hook! 'after-save-hook                                               ; Run this function upon saving
         (defun my-org-roam-rename-file-to-title ()                        ; Define function
@@ -112,9 +119,11 @@
       "y" #'hyperbole)
 
 (after! hyperbole
-  (setq hsys-org-enable-smart-keys 't)  ; prioritze hyperbole functionality completely over org
-  (map! :map org-mode-map               ; rebind org so I can still use it even when on a hyperbole button
-      "s-<return>" #'org-meta-return))
+  ;; Prioritze hyperbole functionality only when on a button
+  (setq hsys-org-enable-smart-keys 'buttons)
+  ;; Rebind org's M-RET so I can still use it even when on a hyperbole button
+  (map! :map org-mode-map
+      "M-s-<return>" #'my-org-meta-return))
 
 (after! hyperbole
   (setq hbmap:dir-user "~/.config/emacs/hyperbole"))
