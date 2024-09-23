@@ -61,3 +61,5 @@
 (package! hyperbole)
 ;; criminal mastermind
 (package! evil-cleverparens)
+;; git actually good
+(package! git-auto-commit-mode)

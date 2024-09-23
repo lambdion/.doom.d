@@ -115,9 +115,9 @@ Deft takes a bit of customizing to work with Org Roam, but it does indeed work v
 ** Org
 The default org directory must be set before it loads, therefore it is outside the ~after!~ block
 #+begin_src emacs-lisp
-;; org directory
 (setq org-directory "~/res/org/")
 (after! org
+  (add-to-list 'org-agenda-files "~/res/org/sync")
   ;; add LaTeX preview to the {SPC m} localleader map in org-mode
   (map! :map org-mode-map
         :localleader

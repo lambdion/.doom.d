@@ -75,9 +75,9 @@
                (substring contents end-of-begin end)
              (format "%s" file)))))))
 
-;; org directory
 (setq org-directory "~/res/org/")
 (after! org
+  (add-to-list 'org-agenda-files "~/res/org/sync")
   ;; add LaTeX preview to the {SPC m} localleader map in org-mode
   (map! :map org-mode-map
         :localleader
