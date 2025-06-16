@@ -82,15 +82,18 @@
   (map! :map org-mode-map
         :localleader
         :n "L" #'org-latex-preview)
+  (map! :map org-mode-map
+        :n "M-<return>" #'my-org-meta-return))
   ;; Make M-RET enter evil insert mode
-  (define-key org-mode-map
-              [remap org-meta-return]
-              #'my-org-meta-return))
+  ;; (define-key org-mode-map
+              ;; [remap org-meta-return]
+              ;; #'my-org-meta-return))
 
 (defun my-org-meta-return ()
   (interactive)
-  (evil-insert-state) ; Enter evil insert mode
-  (org-meta-return))  ; The ordinary function
+  (org-meta-return)  ; The ordinary function
+  (evil-insert-state)) ; Enter evil insert mode
+
 
 (add-hook! 'after-save-hook                                               ; Run this function upon saving
         (defun my-org-roam-rename-file-to-title ()                        ; Define function

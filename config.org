@@ -122,17 +122,19 @@ The default org directory must be set before it loads, therefore it is outside t
   (map! :map org-mode-map
         :localleader
         :n "L" #'org-latex-preview)
+  (map! :map org-mode-map
+        :n "M-<return>" #'my-org-meta-return))
   ;; Make M-RET enter evil insert mode
-  (define-key org-mode-map
-              [remap org-meta-return]
-              #'my-org-meta-return))
+  ;; (define-key org-mode-map
+              ;; [remap org-meta-return]
+              ;; #'my-org-meta-return))
 #+end_src
 I'd rather M-RET on a bullet point put me in insert, so I use this wrapper function.
 #+begin_src emacs-lisp
 (defun my-org-meta-return ()
   (interactive)
-  (evil-insert-state) ; Enter evil insert mode
-  (org-meta-return))  ; The ordinary function
+  (org-meta-return)  ; The ordinary function
+  (evil-insert-state)) ; Enter evil insert mode
 #+end_src
 *** Org Roam
 I used to use a load of config to make org-roam nice, but then realized doom had native org support with ~:lang (org +roam2)~, so the only stuff left are my personal requirements.
