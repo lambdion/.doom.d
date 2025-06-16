@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: Sokal Cite
+# key: sh
+# condition: t
+# --
+<sup><a id="#_${1:00}" href="#_$1">$1</a></sup>$0

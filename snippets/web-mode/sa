@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: Sokal Annotation
+# uuid:
+# key: sk
+# condition: t
+# --
+<section>
+    <p>
+        <strong><a id="${1:##}" href="##$1">#$1</a></strong>
+        $0
+    </p>
+</section>

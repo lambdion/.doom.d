@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: Sokal Endnote
+# key: sl
+# condition: t
+# --
+<p class="note"><a id="_${1:##}" href="##_$1"><sup>$1</sup></a> $0</p>
