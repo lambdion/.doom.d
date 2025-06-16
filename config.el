@@ -94,6 +94,10 @@
   (org-meta-return)  ; The ordinary function
   (evil-insert-state)) ; Enter evil insert mode
 
+(after! org-agenda
+  (add-to-list 'org-agenda-custom-commands
+               '("c" "Thursday" agenda "" ((org-agenda-span 7)
+                                            (org-agenda-start-on-weekday 4)))))
 
 (add-hook! 'after-save-hook                                               ; Run this function upon saving
         (defun my-org-roam-rename-file-to-title ()                        ; Define function

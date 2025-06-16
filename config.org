@@ -136,6 +136,19 @@ I'd rather M-RET on a bullet point put me in insert, so I use this wrapper funct
   (org-meta-return)  ; The ordinary function
   (evil-insert-state)) ; Enter evil insert mode
 #+end_src
+*** Org Agenda
+Add an option for Thursday-Wednesday week display to org-agenda.
+#+begin_src emacs-lisp
+(after! org-agenda
+  (add-to-list 'org-agenda-custom-commands
+               '("c" "Thursday" agenda "" ((org-agenda-span 7)
+                                            (org-agenda-start-on-weekday 4)))))
+#+end_src
+
+#+RESULTS:
+| c | Thursday             | agenda                 |   | ((org-agenda-span 7) (org-agenda-start-on-weekday 4)) |
+| n | Agenda and all TODOs | ((agenda ) (alltodo )) |   |                                                       |
+
 *** Org Roam
 I used to use a load of config to make org-roam nice, but then realized doom had native org support with ~:lang (org +roam2)~, so the only stuff left are my personal requirements.
 **** COMMENT Capture Templates
