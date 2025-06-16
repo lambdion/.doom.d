@@ -1,23 +1,26 @@
-* Config
-Note that this org file will be tangled to ~config.el~ when ~doom sync~ is run, it will also be tangled when saving an org file in your $DOOMDIR (~/doom.d). See [[https://docs.doomemacs.org/latest/modules/config/literate/]].
-
-* Doom
+#+title: Doom Emacs Configuration
 #+begin_src emacs-lisp
 ;;; config.el -*- lexical-binding: t; -*-
 #+end_src
-** Theme
+
+#+begin_quote
+Note that this org file will be tangled to ~config.el~ when ~doom sync~ is run, it will also be tangled when saving an org file in your $DOOMDIR (~/doom.d). See [[https://docs.doomemacs.org/latest/modules/config/literate/]].
+#+end_quote
+
+Remember to stage the changes from ~config.org~ *and* ~config.el~ when using Git.
+* Theme
 #+begin_src emacs-lisp
 (setq doom-theme 'doom-ayu-dark) ; set theme
 ;;(setq fancy-splash-image (expand-file-name "doom-emacs-gray.png" doom-user-dir)) ;  set splash image
 #+end_src
 
-*** Line Numbers
+** Line Numbers
 Set line numbers to True, meaning absolute line numbering will always be shown.
 #+begin_src emacs-lisp
 (setq display-line-numbers-type t)
 #+end_src
 
-**** Disable During Zen
+*** Disable During Zen
 I do not want line numbers activated while in Zen Mode (=writeroom-mode=)
 #+begin_src emacs-lisp
 (defun my-toggle-normal-line-numbers ()
@@ -30,14 +33,14 @@ I do not want line numbers activated while in Zen Mode (=writeroom-mode=)
 ;;; add a hook to run this function when zen mode is activated or deactivated
 (add-hook 'writeroom-mode-hook 'my-toggle-normal-line-numbers)
 #+end_src
-*** Font
+** Font
 See {C-h v doom-font} for documentation on how doom handles fonts.
 #+begin_src emacs-lisp
 (setq doom-font (font-spec :family "Noto Sans Mono Medium" :size 22) ; set defaut font
       doom-variable-pitch-font (font-spec :family "Noto Sans" :size 22) ; set variable width font
       doom-unicode-font "-GOOG-Noto Sans Mono-medium-normal-normal-*-22-*-*-*-*-0-iso10646-1") ; set unicode font
 #+end_src
-**** Fix Greek Characters
+*** Fix Greek Characters
 I had an issue with Greek characters, specifically lambda, not displaying in the correct font. This should fix it.
 For some reason, to actually get this to run, I had to call the function after the fact, rather than just calling it in the config. Setting it to run after eshell (the situation in which I am most likely to experiece this issue) fixes this.
 To fix greek characters on the fly, simply call {M-x my-greek-font-fix}.
@@ -129,7 +132,7 @@ The default org directory must be set before it loads, therefore it is outside t
               ;; [remap org-meta-return]
               ;; #'my-org-meta-return))
 #+end_src
-I'd rather M-RET on a bullet point put me in insert, so I use this wrapper function.
+I'd rather =M-RET= on a bullet point put me in insert, so I use this wrapper function.
 #+begin_src emacs-lisp
 (defun my-org-meta-return ()
   (interactive)
@@ -200,7 +203,6 @@ From [[https://github.com/org-roam/org-roam-ui#doom]]
           org-roam-ui-update-on-save t
           org-roam-ui-open-on-start t))
 #+end_src
-**
 *** Newlines
 A function to space out lines in a file by adding a newline to every line in the buffer.
 #+begin_src emacs-lisp
@@ -226,13 +228,13 @@ A modified version of ~org-html-export-to-html~ that runs the above function bef
       (erase-buffer)
       (insert original-content))))
 #+end_src
-**  Hyperbole
-Doing {SPC h h} all the time is cumbersome. {SPC y} is unbound in doom, nice.
+** Hyperbole
+Doing =SPC h h= all the time is cumbersome, and =SPC y= is not used for anything else.
 #+begin_src emacs-lisp
 (map! :map doom-leader-map
       "y" #'hyperbole)
 #+end_src
-Hyperbole and Org disagree over the {M-RET} key, so I rebind Org's one. Hyperbole has a variable to sort out this disagreement, see {C-h v hsys-org-enable-smart-keys RET} for more info.
+Hyperbole and Org disagree over the =M-RET= key, so I rebind Org's one. Hyperbole has a variable to sort out this disagreement, see ={C-h v hsys-org-enable-smart-keys RET}= for more info.
 #+begin_src emacs-lisp
 (after! hyperbole
   ;; Prioritze hyperbole functionality only when on a button
@@ -247,7 +249,7 @@ I dont like to clutter my home dir with .directories if I can help it.
   (setq hbmap:dir-user "~/.config/emacs/hyperbole"))
 #+end_src
 ** Journal
-I use a monthly journal using =org-journal= (the ~+journal~ flag in =init.el=).
+Setup formats for monthly journal using =org-journal= (the ~+journal~ flag in =init.el=).
 #+begin_src emacs-lisp
 (after! org-journal
   ;; Use a monthly format
@@ -288,7 +290,7 @@ Janky, needs some polish for working with evil and company, but useful in some s
 ;; either way, it works and im not touching it in case it ceases to
 #+end_src
 
-* Other Misc Packages
+* Other Packages
 ** GNU APL Mode
 Add ~gnu-apl-mode~'s keyboard to Doom's {SPC t} toggle menu.
 #+begin_src emacs-lisp
