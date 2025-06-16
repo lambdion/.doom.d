@@ -201,6 +201,31 @@ From [[https://github.com/org-roam/org-roam-ui#doom]]
           org-roam-ui-open-on-start t))
 #+end_src
 **
+*** Newlines
+A function to space out lines in a file by adding a newline to every line in the buffer.
+#+begin_src emacs-lisp
+(defun my-insert-newlines ()
+  "Append newline to every line in the current buffer."
+  (interactive)  ; Prompt for the string
+  (save-excursion  ; Save the current point position
+    (goto-char (point-min))  ; Move to the beginning of the buffer
+    (while (not (eobp))  ; While not at the end of the buffer
+      (end-of-line)  ; Move to the end of the current line
+      (insert "\n")  ; Optionally insert a newline (if you want to keep lines separate)
+      (forward-line 1))))  ; Move to the next line
+#+end_src
+A modified version of ~org-html-export-to-html~ that runs the above function beforehand, for exporting files that use a single newline to separate paragrams to HTML correctly.
+#+begin_src emacs-lisp
+(defun my-org-html-export-to-html-newlines ()
+  "Export current buffer to HTML file having added newlines at the end of every line."
+  (interactive)
+  (save-excursion
+    (let ((original-content (buffer-string)))
+      (my-insert-newlines)
+      (org-html-export-to-html)
+      (erase-buffer)
+      (insert original-content))))
+#+end_src
 **  Hyperbole
 Doing {SPC h h} all the time is cumbersome. {SPC y} is unbound in doom, nice.
 #+begin_src emacs-lisp

@@ -131,6 +131,26 @@
           org-roam-ui-update-on-save t
           org-roam-ui-open-on-start t))
 
+(defun my-insert-newlines ()
+  "Append newline to every line in the current buffer."
+  (interactive)  ; Prompt for the string
+  (save-excursion  ; Save the current point position
+    (goto-char (point-min))  ; Move to the beginning of the buffer
+    (while (not (eobp))  ; While not at the end of the buffer
+      (end-of-line)  ; Move to the end of the current line
+      (insert "\n")  ; Optionally insert a newline (if you want to keep lines separate)
+      (forward-line 1))))  ; Move to the next line
+
+(defun my-org-html-export-to-html-newlines ()
+  "Export current buffer to HTML file having added newlines at the end of every line."
+  (interactive)
+  (save-excursion
+    (let ((original-content (buffer-string)))
+      (my-insert-newlines)
+      (org-html-export-to-html)
+      (erase-buffer)
+      (insert original-content))))
+
 (map! :map doom-leader-map
       "y" #'hyperbole)
 
